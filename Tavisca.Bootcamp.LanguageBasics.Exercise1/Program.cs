@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 {
@@ -22,47 +25,49 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 
         public static int FindDigit(string equation)
         {
-            // Add your code here.
-            double result=0.0;
-            int index=0;
-            string tempString="";
+            try{
+            equation=equation.Replace('*','=');
             string[] subEq=Regex.Split(equation,"=");
-            subEq[0]=subEq[0].Replace('*','=');
-            string[] substr=Regex.Split(subEq[0],"=");
-            
-            if (subEq[0].Contains("?"))
+            if(subEq[0].Contains("?"))
             {
-                if(substr[0].Contains("?"))
-                {
-                    index=substr[0].IndexOf('?');
-                    result= Convert.ToDouble(double.Parse(subEq[1])/double.Parse(substr[1]));
-                    tempString=substr[0];
-                }
-                else if(substr[1].Contains("?"))
-                {
-                    index=substr[1].IndexOf('?');
-                    result= Convert.ToDouble(double.Parse(subEq[1])/double.Parse(substr[0]));
-                    tempString=substr[1];
-
-                }
+               return getResult(subEq[2],subEq[1],subEq[0],"divide");
+            }
+            else if(subEq[1].Contains("?"))
+            {
+               return getResult(subEq[2],subEq[0],subEq[1],"divide");
             }
             else
             {
-                index=subEq[1].IndexOf('?');
-                result= Convert.ToDouble(double.Parse(substr[1])*double.Parse(substr[0]));
-                tempString=subEq[1];
+               return getResult(subEq[0],subEq[1],subEq[2],"multiply");
             }
-            if (result%1!=0||tempString.Contains(result.ToString()))
+          }
+          catch(Exception e)
+          {
+            Console.Write(e);
+            throw new NotImplementedException();
+          }
+        }
+        
+        public static int getResult(string equation1,string equation2,string equation3,string operation)
+        {
+            int result=0;
+            switch(operation)
             {
-                return -1;
+                case "divide":result= int.Parse(equation1)/int.Parse(equation2);
+                if (int.Parse(equation1)%int.Parse(equation2)!=0||equation3.Contains(result.ToString()))
+                {
+                    return -1;
+                }
+                break;
+                
+                case "multiply":result= int.Parse(equation1)*int.Parse(equation2);
+                break;
+                
+                 default: return -1;
+                
             }
-            else
-            {
-                char result_string=((int)result).ToString()[index];
-                return int.Parse(result_string.ToString());
-            }
-
-            //throw new NotImplementedException();
+            char result_string=((int)result).ToString()[equation3.IndexOf('?')];
+            return int.Parse(result_string.ToString());
         }
     }
 }
